@@ -111,3 +111,16 @@ h3 {
   font-size: 0.75rem;
   color: #475569;
 }
+
+.hero-media {
+  width: 100%;
+  height: clamp(220px, 30vw, 420px);
+}
+
+.hero-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
