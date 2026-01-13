@@ -114,7 +114,18 @@ h3 {
 
 .hero-media {
   width: 100%;
-  height: clamp(160px, 25vw, 350px);
+  height: clamp(160px, 18vw, 300px); /* 縦幅を細く設定 */
+  
+  /* カードのデザイン（--radius-xl）に合わせる場合 */
+  border-radius: var(--radius-xl); 
+  overflow: hidden; /* 角丸からはみ出る画像をカット */
+  
+  /* 背景との馴染みを良くする */
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  
+  /* アニメーションを追加（既存のクラスをHTMLにつけてもOK） */
+  animation: fadeIn 0.8s ease-out both;
 }
 
 .hero-media img {
