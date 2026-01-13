@@ -6,6 +6,7 @@
     <title>ACTIVE14 – 海の未来を、僕らの手で。</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet" />
     <link href="/assets/site.css" rel="stylesheet" />
+    <script src="/assets/site.js" defer></script>
   </head>
   <body class="min-h-screen bg-sky-50 text-gray-900 font-sans">
     <header class="bg-white shadow-sm py-6 animate-fade-in">
@@ -35,7 +36,7 @@
 
         <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up">
           <h2 class="text-3xl font-semibold text-sky-600 mb-4">次回活動日のお知らせ</h2>
-          <p class="text-lg mb-4">🗓️ 次回は <span id="nextDateRoot" class="font-bold"></span> 10:30～ 現地で活動予定です！</p>
+          <p class="text-lg mb-4">🗓️ 次回は <span id="nextDate" class="font-bold"></span> 10:30～ 現地で活動予定です！</p>
           <p class="text-lg">☔ 荒天時は中止となります。</p>
         </section>
 
@@ -67,47 +68,5 @@
       </div>
     </main>
 
-    <script>
-      function findSecondSunday(year, month) {
-        let count = 0;
-        for (let day = 1; day <= 31; day++) {
-          const date = new Date(year, month, day);
-          if (date.getMonth() !== month) break;
-          if (date.getDay() === 0) {
-            count++;
-            if (count === 2) return day;
-          }
-        }
-        return null;
-      }
-      function getNextSecondSunday(currentDate) {
-        let year = currentDate.getFullYear();
-        let month = currentDate.getMonth();
-        let day = findSecondSunday(year, month);
-        let date = new Date(year, month, day);
-        if (currentDate > date) {
-          month++;
-          if (month > 11) {
-            month = 0;
-            year++;
-          }
-          day = findSecondSunday(year, month);
-          date = new Date(year, month, day);
-        }
-        return date;
-      }
-      function formatDate(date) {
-        const months = ["1","2","3","4","5","6","7","8","9","10","11","12"];
-        const days = ["日","月","火","水","木","金","土"];
-        return `${months[date.getMonth()]}月${date.getDate()}日（${days[date.getDay()]}）`;
-      }
-      function updateNextDate() {
-        const target = document.getElementById('nextDateRoot');
-        if (!target) return;
-        const date = getNextSecondSunday(new Date());
-        target.textContent = formatDate(date);
-      }
-      updateNextDate();
-    </script>
   </body>
 </html>
