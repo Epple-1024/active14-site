@@ -114,7 +114,7 @@ h3 {
 
 .hero-media {
   width: 100%;
-  height: clamp(160px, 30vw, 350px);
+  height: clamp(160px, 25vw, 350px);
 }
 
 .hero-media img {
