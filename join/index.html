@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>参加について | ACTIVE14</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet" />
+    <link href="/assets/site.css" rel="stylesheet" />
+  </head>
+  <body class="min-h-screen bg-sky-50 text-gray-900 font-sans">
+    <header class="bg-white shadow-sm py-6 animate-fade-in">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <h1 class="text-4xl font-extrabold text-sky-600 tracking-tight mb-2">ACTIVE14</h1>
+        <p class="text-lg text-sky-500">海の未来を、僕らの手で。</p>
+      </div>
+      <nav class="max-w-5xl mx-auto px-6 mt-6">
+        <div class="flex flex-wrap justify-center gap-3 text-sm sm:text-base">
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/">トップ</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-sky-700" href="/join/">参加</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/report/">活動記録</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/contact/">連絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="py-10">
+      <div class="max-w-5xl mx-auto px-6">
+        <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up">
+          <h2 class="text-3xl font-semibold text-sky-600 mb-4">参加の流れ</h2>
+          <p class="text-lg mb-4">高校生大歓迎！友達と一緒に参加OK！</p>
+          <ul class="text-lg list-disc pl-6 space-y-2">
+            <li>参加費無料・持ち物：動きやすい服、軍手、飲み物</li>
+            <li>集合場所：仙台駅東口 9:30</li>
+            <li>現地への移動方法は自転車とバスの2通り</li>
+          </ul>
+        </section>
+
+        <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up">
+          <h2 class="text-3xl font-semibold text-sky-600 mb-4">次回活動日</h2>
+          <p class="text-lg mb-4">🗓️ 次回は <span id="nextDateJoin" class="font-bold"></span> 10:30～ 現地で活動予定です！</p>
+          <p class="text-lg">☔ 荒天時は中止となります。</p>
+        </section>
+
+        <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up">
+          <h2 class="text-3xl font-semibold text-sky-600 mb-4">参加の連絡先</h2>
+          <p class="text-lg mb-6">参加希望・質問はメールでお知らせください。</p>
+          <a href="mailto:info@active14.org" class="inline-flex">
+            <button class="bg-sky-600 hover:bg-sky-700 text-white text-lg px-6 py-3 rounded-full shadow-md transition-transform transform hover:scale-105">メールで連絡する</button>
+          </a>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      function findSecondSunday(year, month) {
+        let count = 0;
+        for (let day = 1; day <= 31; day++) {
+          const date = new Date(year, month, day);
+          if (date.getMonth() !== month) break;
+          if (date.getDay() === 0) {
+            count++;
+            if (count === 2) return day;
+          }
+        }
+        return null;
+      }
+      function getNextSecondSunday(currentDate) {
+        let year = currentDate.getFullYear();
+        let month = currentDate.getMonth();
+        let day = findSecondSunday(year, month);
+        let date = new Date(year, month, day);
+        if (currentDate > date) {
+          month++;
+          if (month > 11) {
+            month = 0;
+            year++;
+          }
+          day = findSecondSunday(year, month);
+          date = new Date(year, month, day);
+        }
+        return date;
+      }
+      function formatDate(date) {
+        const months = ["1","2","3","4","5","6","7","8","9","10","11","12"];
+        const days = ["日","月","火","水","木","金","土"];
+        return `${months[date.getMonth()]}月${date.getDate()}日（${days[date.getDay()]}）`;
+      }
+      function updateNextDate() {
+        const target = document.getElementById('nextDateJoin');
+        if (!target) return;
+        const date = getNextSecondSunday(new Date());
+        target.textContent = formatDate(date);
+      }
+      updateNextDate();
+    </script>
+  </body>
+</html>
