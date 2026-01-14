@@ -1,0 +1,25 @@
+---
+const {
+  frameCount = 120,
+  framePath = "/assets/ocean-seq/frame_",
+  frameExt = "avif",
+  frameDigits = 4
+} = Astro.props;
+---
+<section
+  class="ocean-window-section"
+  aria-label="海の窓"
+  data-ocean-window
+  data-frame-count={frameCount}
+  data-frame-path={framePath}
+  data-frame-ext={frameExt}
+  data-frame-digits={frameDigits}
+>
+  <div class="ocean-window-sticky">
+    <div class="ocean-window-frame" role="img" aria-label="荒浜の海の連番映像">
+      <canvas class="ocean-window-canvas" width="1600" height="900"></canvas>
+      <div class="ocean-window-glass" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+<script src="/assets/ocean-window.js" defer></script>

@@ -1,0 +1,34 @@
+---
+import "../styles/global.css";
+const { title } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link href="/assets/site.css" rel="stylesheet" />
+    <script src="/assets/site.js" defer></script>
+  </head>
+  <body class="min-h-screen bg-sky-50 text-gray-900 font-sans">
+    <header class="bg-white shadow-sm py-6 animate-fade-in">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <h1 class="text-4xl sm:text-5xl font-extrabold text-sky-600 tracking-tight mb-2">ACTIVE14</h1>
+        <p class="text-lg sm:text-xl text-sky-500">海の未来を、僕らの手で。</p>
+      </div>
+      <nav class="max-w-5xl mx-auto px-6 mt-6">
+        <div class="flex flex-wrap justify-center gap-3 text-sm sm:text-base">
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-sky-700" href="/">トップ</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/join/">参加</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/report/">活動記録</a>
+          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/contact/">連絡</a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="py-10">
+      <slot />
+    </main>
+  </body>
+</html>

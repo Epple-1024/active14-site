@@ -1,0 +1,61 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import OceanWindow from "../components/OceanWindow.astro";
+---
+<BaseLayout title="ACTIVE14 – 海の未来を、僕らの手で。">
+  <div class="max-w-5xl mx-auto px-6">
+    <section class="ui-card p-0 overflow-hidden animate-slide-up">
+      <div class="hero-media">
+        <img
+          src="/assets/images/hero001.avif"
+          alt="荒浜の海"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+    </section>
+
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h2 class="text-3xl font-semibold text-sky-600 mb-4">MISSION</h2>
+      <p class="text-lg mb-4">
+        私たちACTIVE14は、仙台・荒浜で月1回の海岸清掃を行う高校生ボランティアです。できることを、できる分だけ。海が好きな人が集まって続けています。
+      </p>
+      <a class="inline-flex items-center text-sky-600 font-semibold" href="/about/">団体について詳しく見る →</a>
+    </section>
+
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h2 class="text-3xl font-semibold text-sky-600 mb-4">次回活動日のお知らせ</h2>
+      <p class="text-lg mb-2">🗓️ 次回は <span data-next-date class="font-bold"></span> 10:30～ 現地で活動予定です。</p>
+      <p class="text-lg mb-2">毎月第2日曜日 10:30〜（荒天時は中止）</p>
+      <p class="text-sm text-gray-600">※中止の場合はこのサイトでお知らせします。</p>
+    </section>
+
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h2 class="text-3xl font-semibold text-sky-600 mb-4">参加について</h2>
+      <p class="text-lg mb-3">初めてでも大丈夫。1人参加も歓迎です。</p>
+      <p class="text-lg mb-3">服装：動きやすい服／持ち物：軍手・飲み物</p>
+      <p class="text-lg mb-4">集合場所：仙台駅東口 9:30（現地への移動方法は自転車・バスの2通り）</p>
+      <div class="flex flex-col sm:flex-row gap-4 mt-6">
+        <a class="flex-1" href="/join/">
+          <button class="w-full bg-sky-600 hover:bg-sky-700 text-white text-lg px-6 py-3 rounded-full shadow-md transition-transform transform hover:scale-105 ui-button">参加の詳細を見る</button>
+        </a>
+        <a class="flex-1" href="/contact/">
+          <button class="w-full bg-white border-2 border-sky-600 text-sky-600 text-lg px-6 py-3 rounded-full shadow-md transition-transform transform hover:scale-105 ui-button ui-button-outline">メールで連絡する</button>
+        </a>
+      </div>
+    </section>
+
+    <OceanWindow frameCount={120} />
+
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h2 class="text-3xl font-semibold text-sky-600 mb-4">活動記録</h2>
+      <p class="text-lg mb-4">ここでは過去の活動報告を掲載します。月ごとに写真や参加者数、収集したゴミの量などを更新していきます。</p>
+      <a class="inline-flex items-center text-sky-600 font-semibold" href="/report/">活動記録一覧へ →</a>
+    </section>
+
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h2 class="text-3xl font-semibold text-sky-600 mb-4">協力団体</h2>
+      <p class="text-lg">協力していただいている学校や企業、団体を紹介します。</p>
+    </section>
+  </div>
+</BaseLayout>
