@@ -1,15 +1,24 @@
-/*
-  ACTIVE14 site.css
-  Updated: 2026-01-25 - Removed negative margin to prevent overlapping.
-*/
+/* src/styles/site.css */
 
-/* --- (Animations / Helpers / Buttons / Hero / ui-card などは変更なし) --- */
+/* ------------------------------
+   Global Settings
+   ご要望通り、全体を90%のサイズ感に縮小します。
+   remを使っているため、ここを変えるだけで全ての比率を保ったまま小さくなります。
+------------------------------ */
+html {
+  font-size: 90%; /* 16px -> 14.4px */
+}
+
+/* ------------------------------
+   Unified Card Style
+------------------------------ */
 .ui-card {
   width: 100%;
   background-color: white;
   border-radius: 1.5rem;
   padding: 2rem;
   margin-bottom: 2.5rem;
+  /* 共通の影設定 */
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   transition: transform 240ms ease, box-shadow 240ms ease;
   will-change: transform;
@@ -29,27 +38,19 @@
 /* ------------------------------
    Pinned Sequence (Layout Fix)
 ------------------------------ */
-
 .pinned-sequence-wrapper {
   position: relative;
   width: 100%;
-  
-  /* スクロール長: 少し余裕を持たせて 130vh 程度にします。
-     100vh(固定) + 30vh(スクロール) = サクッと終わる長さ
-  */
-  height: 200vh;
-  
-  /* 重要: ネガティブマージン(-20vh)を削除し、
-     次の要素（フッター）が自然に下に配置されるようにします。
-  */
+  height: 130vh;
   margin-bottom: 0;
-  
   z-index: 20;
 }
 
 .pinned-sequence-container {
   position: sticky;
   top: 0;
+  
+  /* デスクトップでは100vhでOK */
   height: 100vh;
   width: 100%;
   
@@ -62,18 +63,16 @@
   padding-top: 1rem; 
 }
 
-/* --- (以下、内部のカードや窓の設定は変更なし) --- */
-.pinned-sequence-container .ui-card {
+.pinned-sequence-container .ui-card,
+.pinned-sequence-container .ocean-window-section {
   margin-bottom: 0;
   flex-shrink: 0;
 }
 
-.pinned-sequence-container .ocean-window-section {
-  width: 100%;
-  margin: 0;
-  flex-shrink: 0;
-}
-
+/* ------------------------------
+   Ocean Window Frame
+   修正: 一般カードと同じ影を追加し、存在感を出します。
+------------------------------ */
 .ocean-window-frame {
   position: relative;
   width: 100%;
@@ -81,145 +80,58 @@
   border-radius: 28px;
   overflow: hidden;
   background: #0b1320;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 4px 12px rgba(0, 0, 0, 0.4),
-    inset 0 10px 20px rgba(0, 0, 0, 0.2),
-    inset 0 -4px 10px rgba(255, 255, 255, 0.1);
+  
+  /* 修正: ui-cardと同じ影を追加 */
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.2), 
+    0 10px 10px -5px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05); /* インセットは少し弱める */
 }
 
-.ocean-window-frame::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 28px;
-  pointer-events: none;
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15);
-  z-index: 5;
-}
+/* ... (中略: poster, canvas, glass 等は変更なし) ... */
+.ocean-window-frame::before { content: ""; position: absolute; inset: 0; border-radius: 28px; pointer-events: none; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.15); z-index: 5; }
+.ocean-window-poster, .ocean-window-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ocean-window-poster { object-fit: cover; z-index: 1; }
+[data-ocean-window][data-ready="true"] .ocean-window-poster { opacity: 0; transition: opacity 400ms ease; }
+.ocean-window-canvas { z-index: 2; }
+.ocean-window-glass { position: absolute; inset: 0; pointer-events: none; z-index: 10; background: linear-gradient(115deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.0) 40%, rgba(255,255,255,0.0) 60%, rgba(255,255,255,0.1) 100%); mix-blend-mode: overlay; opacity: 0.8; }
 
-.ocean-window-poster,
-.ocean-window-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
 
-.ocean-window-poster {
-  object-fit: cover;
-  z-index: 1;
-}
-
-[data-ocean-window][data-ready="true"] .ocean-window-poster {
-  opacity: 0;
-  transition: opacity 400ms ease;
-}
-
-.ocean-window-canvas {
-  z-index: 2;
-}
-
-.ocean-window-glass {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-  background: linear-gradient(
-    115deg, 
-    rgba(255,255,255,0.05) 0%, 
-    rgba(255,255,255,0.0) 40%, 
-    rgba(255,255,255,0.0) 60%, 
-    rgba(255,255,255,0.1) 100%
-  );
-  mix-blend-mode: overlay;
-  opacity: 0.8;
-}
-
+/* ------------------------------
+   Mobile Adjustments
+   修正: スマホで見切れる問題を解消します。
+------------------------------ */
 @media (max-width: 640px) {
   .pinned-sequence-wrapper {
     height: 120vh;
   }
+  
+  /* 重要: モバイルでは画面の高さが足りなくなるため、
+     gap（間隔）とpaddingを限界まで詰めて、3つの要素が収まるようにします。 
+  */
+  .pinned-sequence-container {
+    height: 100dvh; /* dynamic viewport heightを使用 */
+    gap: 1rem;      /* 2.5rem -> 1rem に縮小 */
+    padding-top: 0.5rem;
+    justify-content: center; /* 中央寄せにして上下均等に */
+  }
+
+  /* カード内の余白も少し詰める */
+  .pinned-sequence-container .ui-card {
+    padding: 1.25rem;
+  }
 }
 
 /* ------------------------------
-   View Transitions (Blur Out & Staggered Entry)
-   1. 古いページ: ブラーで消える
-   2. 新しいページ: カードが上から順にふわっと現れる
+   View Transitions (Animations)
+   前回の設定を維持
 ------------------------------ */
-
-/* --- 1. ページ遷移自体の設定 --- */
-
-/* メインコンテンツのトランジショングループ */
-::view-transition-group(main-content) {
-  /* 消えるアニメーションの時間 (この時間は「背景だけ」の時間になります) */
-  animation-duration: 0.5s; 
-  /* 変形（引き伸ばし）を防ぐため、高さ調整は無視させる */
-  overflow: hidden; 
-}
-
-/* 古いページが消えるとき */
-::view-transition-old(main-content) {
-  animation: blurOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-  /* 基準点を上にし、少し下に下がりながら消える */
-  transform-origin: top center;
-}
-
-/* 新しいページのスナップショットは「表示しない」
-   (これを表示せず、この後のDOM要素のアニメーションで見せるため) 
-*/
-::view-transition-new(main-content) {
-  animation: none;
-  opacity: 0;
-}
-
-/* 消えるアニメーション定義 */
-@keyframes blurOut {
-  0% {
-    opacity: 1;
-    filter: blur(0px);
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    filter: blur(20px); /* 強くぼかす */
-    transform: translateY(20px) scale(0.95); /* 少し沈みながら消える */
-  }
-}
-
-
-/* --- 2. 新しいページのカード登場アニメーション (Staggered Entry) --- */
-
-/* .main-container の直下にある要素（カードや窓など）すべてに適用
-  初期状態を opacity: 0 にしておき、アニメーションで表示させる
-*/
-.main-container > * {
-  animation: cardFadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
-  /* 重要: 遷移時間(0.5s)の間は待機させたいので、ベースの遅延を設定します。
-    これを設定しないと、ページが消えている裏で勝手に登場してしまいます。
-  */
-  animation-delay: 0.4s; 
-}
-
-/* 登場アニメーション定義 */
-@keyframes cardFadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(30px); /* 下から */
-    filter: blur(10px); /* 少しぼけながら */
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-}
-
-/* 上から順に遅延（Delay）をずらす設定 (nth-child)
-  これで「パラパラ...」と表示されます。
-  数は多めに20個まで設定しておきます。
-*/
+::view-transition-group(main-content) { animation-duration: 0.5s; overflow: hidden; }
+::view-transition-old(main-content) { animation: blurOut 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; transform-origin: top center; }
+::view-transition-new(main-content) { animation: none; opacity: 0; }
+@keyframes blurOut { 0% { opacity: 1; filter: blur(0px); transform: translateY(0) scale(1); } 100% { opacity: 0; filter: blur(20px); transform: translateY(20px) scale(0.95); } }
+.main-container > * { animation: cardFadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) backwards; animation-delay: 0.4s; }
+@keyframes cardFadeInUp { 0% { opacity: 0; transform: translateY(30px); filter: blur(10px); } 100% { opacity: 1; transform: translateY(0); filter: blur(0); } }
 .main-container > *:nth-child(1) { animation-delay: 0.45s; }
 .main-container > *:nth-child(2) { animation-delay: 0.55s; }
 .main-container > *:nth-child(3) { animation-delay: 0.65s; }
@@ -230,16 +142,4 @@
 .main-container > *:nth-child(8) { animation-delay: 1.15s; }
 .main-container > *:nth-child(9) { animation-delay: 1.25s; }
 .main-container > *:nth-child(10) { animation-delay: 1.35s; }
-/* ...必要に応じて増やす... */
-
-
-/* --- アクセシビリティ対応 --- */
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*),
-  .main-container > * {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-}
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*), .main-container > * { animation: none !important; opacity: 1 !important; } }
