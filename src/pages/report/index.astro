@@ -1,23 +1,43 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// 仮のデータ（実際はCMSやマークダウンから取得する想定）
+const reports = [
+  { id: 1, date: "2026.01.12", title: "1月の活動報告：寒空の下での清掃", image: "/assets/images/hero001.avif" },
+  { id: 2, date: "2025.12.14", title: "12月の活動報告：年内最後の活動", image: null },
+  { id: 3, date: "2025.11.10", title: "11月の活動報告：紅葉と荒浜", image: null },
+];
 ---
-<BaseLayout title="活動記録 | ACTIVE14">
-  <div class="max-w-5xl mx-auto px-6">
-    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
-      <h2 class="text-3xl font-semibold text-sky-600 mb-4">活動記録一覧</h2>
-      <p class="text-lg mb-6">月ごとの活動内容を掲載します。</p>
-      <div class="space-y-4">
-        <a class="block bg-sky-50 border border-sky-100 rounded-2xl p-6 hover:border-sky-200 ui-card ui-card--link" href="/report/2026-01/">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm text-gray-500">2026年1月</p>
-              <p class="text-xl font-semibold text-sky-700">2026年1月 活動記録</p>
-              <p class="text-sm text-gray-500 mt-2">参加人数: 24名 ・ 回収量: 6袋</p>
-            </div>
-            <span class="text-sky-600 font-semibold">読む →</span>
-          </div>
-        </a>
-      </div>
+
+<BaseLayout title="REPORT - ACTIVE14">
+  <div class="main-container max-w-5xl mx-auto px-6 w-full">
+    
+    <section class="ui-card">
+      <h1 class="text-3xl font-bold text-sky-600 mb-2">活動記録</h1>
+      <p class="text-lg text-slate-600">
+        これまでの活動の様子をお届けします。
+      </p>
     </section>
+
+    {reports.map((post) => (
+      <section class="ui-card flex flex-col md:flex-row gap-6 items-center md:items-start">
+        {post.image && (
+          <div class="w-full md:w-1/3 aspect-video bg-slate-200 rounded-xl overflow-hidden shrink-0">
+            <img src={post.image} alt="" class="w-full h-full object-cover" />
+          </div>
+        )}
+        <div class="flex-1 w-full">
+          <p class="text-sm font-bold text-sky-500 mb-1">{post.date}</p>
+          <h2 class="text-2xl font-bold text-slate-800 mb-3">{post.title}</h2>
+          <p class="text-slate-600 mb-4 line-clamp-2">
+            この日は気温も低く、風が強い中での活動となりましたが、15名の参加者が集まりました。海岸にはプラスチックごみが多く漂着しており...
+          </p>
+          <a href={`/report/${post.id}/`} class="text-sky-600 font-bold hover:underline">
+            続きを読む →
+          </a>
+        </div>
+      </section>
+    ))}
+
   </div>
 </BaseLayout>

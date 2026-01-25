@@ -1,34 +1,82 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import "../styles/global.css";
+
 const { title } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: "/", label: "TOP" },
+  { href: "/about/", label: "ABOUT" },
+  { href: "/join/", label: "JOIN" },
+  { href: "/report/", label: "REPORT" },
+  { href: "/contact/", label: "CONTACT" },
+];
+
+const isActive = (href) => {
+  if (href === "/") {
+    return currentPath === "/";
+  }
+  return currentPath.startsWith(href);
+};
 ---
-<!DOCTYPE html>
+
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
-    <link href="/assets/site.css" rel="stylesheet" />
-    <script src="/assets/site.js" defer></script>
+    <ClientRouter />
+    <link rel="stylesheet" href="/assets/site.css" />
   </head>
-  <body class="min-h-screen bg-sky-50 text-gray-900 font-sans">
-    <header class="bg-white shadow-sm py-6 animate-fade-in">
-      <div class="max-w-5xl mx-auto px-6 text-center">
-        <h1 class="text-4xl sm:text-5xl font-extrabold text-sky-600 tracking-tight mb-2">ACTIVE14</h1>
-        <p class="text-lg sm:text-xl text-sky-500">海の未来を、僕らの手で。</p>
+  
+  <body class="bg-sky-50 text-slate-800 font-sans min-h-screen flex flex-col">
+    
+    <header class="w-full bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-sky-100">
+      <div class="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a href="/" class="text-2xl font-bold tracking-tighter text-sky-600 hover:opacity-80 transition-opacity">
+          ACTIVE<span class="text-slate-800">14</span>
+        </a>
+
+        <nav class="hidden md:flex gap-2">
+          {navItems.map((item) => {
+            const active = isActive(item.href);
+            return (
+              <a
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                class:list={[
+                  "px-4 py-2 rounded-full text-sm font-bold transition-all duration-200",
+                  active
+                    ? "bg-sky-100 text-sky-700 shadow-sm translate-y-[-1px] pointer-events-none cursor-default" 
+                    : "text-slate-500 hover:text-sky-600 hover:bg-sky-50"
+                ]}
+              >
+                {item.label}
+              </a>
+            );
+          })}
+        </nav>
+
+        <button class="md:hidden text-slate-600 p-2">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
       </div>
-      <nav class="max-w-5xl mx-auto px-6 mt-6">
-        <div class="flex flex-wrap justify-center gap-3 text-sm sm:text-base">
-          <a class="nav-link px-4 py-2 rounded-full font-semibold text-sky-700" href="/">トップ</a>
-          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/join/">参加</a>
-          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/report/">活動記録</a>
-          <a class="nav-link px-4 py-2 rounded-full font-semibold text-gray-700" href="/contact/">連絡</a>
-        </div>
-      </nav>
     </header>
 
-    <main class="py-10">
+    <main class="w-full pt-10 pb-20 flex-1" transition:name="main-content">
       <slot />
     </main>
+
+    <footer class="w-full bg-sky-900 py-10 mt-auto border-t border-sky-800">
+      <div class="max-w-5xl mx-auto px-6 text-center">
+        <p class="text-white font-bold text-xl mb-2">ACTIVE14</p>
+        <p class="text-sky-200 text-sm">© 2026 ACTIVE14. All Rights Reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/assets/site.js" defer></script>
   </body>
 </html>

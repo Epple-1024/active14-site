@@ -1,30 +1,54 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
-<BaseLayout title="参加について | ACTIVE14">
-  <div class="max-w-5xl mx-auto px-6">
-    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
-      <h2 class="text-3xl font-semibold text-sky-600 mb-4">参加の流れ</h2>
-      <p class="text-lg mb-4">高校生大歓迎！友達と一緒に参加OK！</p>
-      <ul class="text-lg list-disc pl-6 space-y-2">
-        <li>参加費無料・持ち物：動きやすい服、軍手、飲み物</li>
-        <li>集合場所：仙台駅東口 9:30</li>
-        <li>現地への移動方法は自転車とバスの2通り</li>
+
+<BaseLayout title="JOIN - ACTIVE14">
+  <div class="main-container max-w-5xl mx-auto px-6 w-full">
+    
+    <section class="ui-card">
+      <h1 class="text-3xl font-bold text-sky-600 mb-6">参加について</h1>
+      <p class="text-lg leading-relaxed">
+        ACTIVE14の活動に興味を持っていただきありがとうございます。<br>
+        私たちの活動は、高校生であればどなたでも参加可能です。1回だけの参加も、お友達との参加も大歓迎です。
+      </p>
+    </section>
+
+    <section class="ui-card">
+      <h2 class="text-2xl font-bold text-sky-600 mb-4">持ち物・服装</h2>
+      <ul class="list-disc list-inside text-lg space-y-2 ml-2">
+        <li>動きやすく、汚れても良い服装</li>
+        <li>スニーカー（サンダルは危険なのでNGです）</li>
+        <li>水分補給用の飲み物</li>
+        <li>軍手（貸出もありますが、持参推奨です）</li>
+        <li>帽子・タオル（夏場は特に必須です）</li>
       </ul>
     </section>
 
-    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
-      <h2 class="text-3xl font-semibold text-sky-600 mb-4">次回活動日</h2>
-      <p class="text-lg mb-4">🗓️ 次回は <span data-next-date class="font-bold"></span> 10:30～ 現地で活動予定です！</p>
-      <p class="text-lg">☔ 荒天時は中止となります。</p>
+    <section class="ui-card">
+      <h2 class="text-2xl font-bold text-sky-600 mb-4">集合場所・アクセス</h2>
+      <p class="text-lg mb-4">
+        <span class="font-bold">集合：</span> 毎月第2日曜日 10:30<br>
+        <span class="font-bold">場所：</span> 仙台市若林区荒浜海岸（貞山堀付近）
+      </p>
+      <p class="text-lg mb-2">
+        <span class="font-bold">【バスでお越しの方】</span><br>
+        仙台駅西口バスプール 6番乗り場から「荒井駅」行きに乗車 → 荒井駅から「震災遺構仙台荒浜小学校前」行きに乗り換え。
+      </p>
     </section>
 
-    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
-      <h2 class="text-3xl font-semibold text-sky-600 mb-4">参加の連絡先</h2>
-      <p class="text-lg mb-6">参加希望・質問はメールでお知らせください。</p>
-      <a href="mailto:info@active14.org" class="inline-flex">
-        <button class="bg-sky-600 hover:bg-sky-700 text-white text-lg px-6 py-3 rounded-full shadow-md transition-transform transform hover:scale-105 ui-button">メールで連絡する</button>
-      </a>
+    <section class="ui-card">
+      <h2 class="text-2xl font-bold text-sky-600 mb-4">よくある質問</h2>
+      <div class="space-y-4">
+        <div>
+          <p class="font-bold text-lg text-sky-700">Q. 雨の日はどうなりますか？</p>
+          <p class="text-lg">A. 小雨決行ですが、荒天時は中止となります。中止の場合は当日の朝8時までに当サイトおよびSNSでお知らせします。</p>
+        </div>
+        <div>
+          <p class="font-bold text-lg text-sky-700">Q. 遅刻・早退はできますか？</p>
+          <p class="text-lg">A. もちろんです。事前にご連絡いただければ柔軟に対応します。</p>
+        </div>
+      </div>
     </section>
+
   </div>
 </BaseLayout>

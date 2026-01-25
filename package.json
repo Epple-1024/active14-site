@@ -9,9 +9,9 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "astro": "^4.15.4",
-    "@astrojs/cloudflare": "^11.0.2",
-    "@astrojs/tailwind": "^5.1.0"
+    "@astrojs/cloudflare": "^12.6.12",
+    "@astrojs/tailwind": "^6.0.2",
+    "astro": "^5.16.15"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",
