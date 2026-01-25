@@ -6,7 +6,7 @@
 /* --- (Animations / Helpers / Buttons / Hero / ui-card などは変更なし) --- */
 .ui-card {
   width: 100%;
-  background-color: #f0f9ff;
+  background-color: white;
   border-radius: 1.5rem;
   padding: 2rem;
   margin-bottom: 2.5rem;
