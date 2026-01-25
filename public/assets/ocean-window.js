@@ -1,127 +1,82 @@
-(() => {
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const windows = document.querySelectorAll("[data-ocean-window]");
-  if (!windows.length) return;
+/**
+ * ACTIVE14 Ocean Window Script
+ * Updated: 2026-01-25
+ * 機能: 親ラッパー(.pinned-sequence-wrapper)のスクロール位置を検知し、
+ * 画面固定中(sticky)に画像をコマ送り再生する。
+ */
 
-  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+(function() {
+  const container = document.querySelector('[data-ocean-window]');
+  if (!container) return;
 
-  function padNumber(value, digits) {
-    return String(value).padStart(digits, "0");
+  const canvas = container.querySelector('.ocean-window-canvas');
+  const context = canvas.getContext('2d');
+  
+  // 親ラッパーを探す（もし無ければ自分自身を使うフォールバック）
+  const wrapper = container.closest('.pinned-sequence-wrapper') || container;
+
+  const frameCount = parseInt(container.dataset.frameCount, 10) || 90;
+  const framePath = container.dataset.framePath;
+  const frameExt = container.dataset.frameExt || "avif";
+  const frameDigits = parseInt(container.dataset.frameDigits, 10) || 4;
+
+  const images = [];
+  let imagesLoaded = 0;
+
+  // 1. 画像プリロード
+  for (let i = 1; i <= frameCount; i++) {
+    const img = new Image();
+    const numStr = String(i).padStart(frameDigits, '0');
+    img.src = `${framePath}${numStr}.${frameExt}`;
+    
+    img.onload = () => {
+      imagesLoaded++;
+      if (imagesLoaded === 1) requestAnimationFrame(updateFrame);
+      if (imagesLoaded === frameCount) container.dataset.ready = "true";
+    };
+    images.push(img);
   }
 
-  function buildFrameUrl(base, index, digits, ext) {
-    return `${base}${padNumber(index, digits)}.${ext}`;
+  // 2. フレーム更新ロジック
+  function updateFrame() {
+    // 基準にする要素（ラッパー）の位置を取得
+    const rect = wrapper.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+
+    // スクロール可能な総距離 = ラッパーの高さ - 画面の高さ
+    // (CSSで height: 400vh としているので、たっぷりスクロールできる)
+    const travelDistance = rect.height - viewportHeight;
+
+    // 現在の進捗状況
+    // ラッパーが画面上端に来た瞬間(top=0)から計算開始
+    // rect.top はスクロールするとマイナスになるため、符号を反転させる
+    const scrolled = -rect.top;
+
+    let progress = scrolled / travelDistance;
+
+    // 0.0 〜 1.0 に収める
+    progress = Math.max(0, Math.min(1, progress));
+
+    // 進捗率をフレーム番号に変換
+    const frameIndex = Math.min(
+      frameCount - 1,
+      Math.floor(progress * (frameCount - 1))
+    );
+
+    drawImage(frameIndex);
   }
 
-  function drawImageCover(ctx, image, width, height) {
-    const canvasRatio = width / height;
-    const imageRatio = image.width / image.height;
-    let drawWidth = width;
-    let drawHeight = height;
-    let offsetX = 0;
-    let offsetY = 0;
-
-    if (imageRatio > canvasRatio) {
-      drawHeight = height;
-      drawWidth = height * imageRatio;
-      offsetX = (width - drawWidth) / 2;
-    } else {
-      drawWidth = width;
-      drawHeight = width / imageRatio;
-      offsetY = (height - drawHeight) / 2;
+  function drawImage(index) {
+    const img = images[index];
+    if (img && img.complete) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(img, 0, 0, canvas.width, canvas.height);
     }
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
   }
 
-  windows.forEach((section) => {
-    const canvas = section.querySelector(".ocean-window-canvas");
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+  // 3. イベントリスナー
+  window.addEventListener('scroll', () => requestAnimationFrame(updateFrame));
+  window.addEventListener('resize', updateFrame);
+  updateFrame();
 
-    const frameCount = Number(section.dataset.frameCount || 1);
-    const framePath = section.dataset.framePath || "/assets/ocean-seq/frame_";
-    const frameExt = section.dataset.frameExt || "avif";
-    const frameDigits = Number(section.dataset.frameDigits || 4);
-
-    const cache = new Map();
-    let currentFrame = 1;
-    let ticking = false;
-
-    const ensureImage = (index) => {
-      if (cache.has(index)) return cache.get(index);
-      const img = new Image();
-      img.decoding = "async";
-      img.loading = "eager";
-      img.src = buildFrameUrl(framePath, index, frameDigits, frameExt);
-      cache.set(index, img);
-      return img;
-    };
-
-    const preloadAround = (index) => {
-      const range = 4;
-      for (let i = index - range; i <= index + range; i++) {
-        if (i < 1 || i > frameCount) continue;
-        ensureImage(i);
-      }
-    };
-
-    const renderFrame = (index) => {
-      const clamped = clamp(index, 1, frameCount);
-      currentFrame = clamped;
-      const img = ensureImage(clamped);
-      if (img.complete) {
-        drawImageCover(ctx, img, canvas.width, canvas.height);
-      } else {
-        img.onload = () => drawImageCover(ctx, img, canvas.width, canvas.height);
-      }
-      preloadAround(clamped);
-    };
-
-    const updateCanvasSize = () => {
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width = Math.max(1, Math.floor(rect.width * ratio));
-      canvas.height = Math.max(1, Math.floor(rect.height * ratio));
-      if (cache.has(currentFrame)) {
-        const img = cache.get(currentFrame);
-        if (img.complete) {
-          drawImageCover(ctx, img, canvas.width, canvas.height);
-        }
-      }
-    };
-
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(() => {
-        const rect = section.getBoundingClientRect();
-        const start = window.innerHeight;
-        const end = -rect.height;
-        const total = start - end;
-        if (total <= 0) {
-          ticking = false;
-          return;
-        }
-        const progress = clamp((start - rect.top) / total, 0, 1);
-        const frameIndex = Math.round(progress * (frameCount - 1)) + 1;
-        if (frameIndex !== currentFrame) {
-          renderFrame(frameIndex);
-        }
-        ticking = false;
-      });
-    };
-
-    updateCanvasSize();
-    renderFrame(1);
-
-    if (prefersReducedMotion) {
-      return;
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", updateCanvasSize);
-  });
 })();
