@@ -1,11 +1,29 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-// 仮のデータ（実際はCMSやマークダウンから取得する想定）
+// 修正ポイント: slugを追加し、実在する記事のみ slug を指定、まだない記事は null にする
 const reports = [
-  { id: 1, date: "2026.01.12", title: "1月の活動報告：寒空の下での清掃", image: "/assets/images/hero001.avif" },
-  { id: 2, date: "2025.12.14", title: "12月の活動報告：年内最後の活動", image: null },
-  { id: 3, date: "2025.11.10", title: "11月の活動報告：紅葉と荒浜", image: null },
+  { 
+    id: 1, 
+    slug: "2026-01", // ここがディレクトリ名と一致します (/src/pages/report/2026-01/)
+    date: "2026.01.12", 
+    title: "1月の活動報告：寒空の下での清掃", 
+    image: "/assets/images/hero001.avif" 
+  },
+  { 
+    id: 2, 
+    slug: null, // まだファイルがないので null にしてリンクを作らない
+    date: "2025.12.14", 
+    title: "12月の活動報告：年内最後の活動", 
+    image: null 
+  },
+  { 
+    id: 3, 
+    slug: null, // まだファイルがないので null
+    date: "2025.11.10", 
+    title: "11月の活動報告：紅葉と荒浜", 
+    image: null 
+  },
 ];
 ---
 
@@ -32,9 +50,17 @@ const reports = [
           <p class="text-slate-600 mb-4 line-clamp-2">
             この日は気温も低く、風が強い中での活動となりましたが、15名の参加者が集まりました。海岸にはプラスチックごみが多く漂着しており...
           </p>
-          <a href={`/report/${post.id}/`} class="text-sky-600 font-bold hover:underline">
-            続きを読む →
-          </a>
+          
+          {/* 修正ポイント: slugがある場合のみリンクを表示、なければ「準備中」とする */}
+          {post.slug ? (
+            <a href={`/report/${post.slug}/`} class="text-sky-600 font-bold hover:underline">
+              続きを読む →
+            </a>
+          ) : (
+            <span class="text-gray-400 font-bold text-sm cursor-not-allowed">
+              記事準備中
+            </span>
+          )}
         </div>
       </section>
     ))}
