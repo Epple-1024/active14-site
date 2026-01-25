@@ -143,3 +143,22 @@ html {
 .main-container > *:nth-child(9) { animation-delay: 1.25s; }
 .main-container > *:nth-child(10) { animation-delay: 1.35s; }
 @media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*), .main-container > * { animation: none !important; opacity: 1 !important; } }
+
+/* ------------------------------
+   Status Banner (中止時のお知らせ)
+   JSによって動的にbodyの先頭に追加されます
+------------------------------ */
+.ui-banner {
+  width: 100%;
+  background-color: #ef4444; /* red-500: 警告色 */
+  color: white;
+  position: relative;
+  z-index: 100; /* ヘッダー(z-50)より上に表示 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(0); }
+}

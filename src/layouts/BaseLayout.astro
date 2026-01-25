@@ -28,6 +28,7 @@ const isActive = (href) => {
     <title>{title}</title>
     <ClientRouter />
   </head>
+
   <body class="bg-sky-50 text-slate-800 font-sans min-h-screen flex flex-col">
     
     <header class="w-full bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-sky-100">
@@ -95,12 +96,21 @@ const isActive = (href) => {
     </footer>
 
     <script>
-      // ページ遷移ごとに実行するために astro:page-load イベントを使います
       document.addEventListener('astro:page-load', () => {
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');
         
         if (btn && menu) {
+          // メニュー項目をクリックした時も閉じるようにする
+          const links = menu.querySelectorAll('a');
+          links.forEach(link => {
+            link.addEventListener('click', () => {
+              menu.classList.add('hidden');
+              menu.classList.remove('flex');
+            });
+          });
+
+          // ボタンクリックでの開閉
           btn.addEventListener('click', () => {
             menu.classList.toggle('hidden');
             menu.classList.toggle('flex');
@@ -109,5 +119,9 @@ const isActive = (href) => {
       });
     </script>
     
-    </body>
+    <script>
+      import "../scripts/site.js";
+    </script>
+    
+  </body>
 </html>
