@@ -1,0 +1,107 @@
+---
+export const prerender = false;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+<BaseLayout title="投稿管理 | ACTIVE14">
+  <div class="max-w-3xl mx-auto px-6">
+    <section class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card">
+      <h1 class="text-3xl font-bold text-sky-600 mb-4">投稿管理</h1>
+      <p class="text-slate-600 mb-6">ID/パスワードでログインして投稿します。</p>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="loginUser">ユーザーID</label>
+          <input id="loginUser" name="user" type="text" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" />
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="loginPass">パスワード</label>
+          <input id="loginPass" name="password" type="password" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" />
+        </div>
+        <button type="submit" class="w-full bg-sky-600 text-white px-6 py-3 rounded-full ui-button">ログイン</button>
+        <p id="loginMessage" class="text-sm text-rose-500"></p>
+      </form>
+    </section>
+
+    <section id="editor" class="bg-white rounded-3xl shadow-lg p-8 mb-10 animate-slide-up ui-card" hidden>
+      <h2 class="text-2xl font-bold text-sky-600 mb-4">新規レポート投稿</h2>
+      <form id="reportForm" class="space-y-4">
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="reportTitle">タイトル</label>
+          <input id="reportTitle" name="title" type="text" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required />
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="reportDate">活動日 (YYYY-MM-DD)</label>
+          <input id="reportDate" name="date" type="date" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required />
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="reportSummary">概要</label>
+          <textarea id="reportSummary" name="summary" rows="2" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required></textarea>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm font-semibold text-slate-600" for="reportParticipants">参加人数</label>
+            <input id="reportParticipants" name="participants" type="text" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required />
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-600" for="reportCollected">回収量</label>
+            <input id="reportCollected" name="collected" type="text" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required />
+          </div>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-600" for="reportBody">本文 (Markdown)</label>
+          <textarea id="reportBody" name="body" rows="8" class="w-full mt-2 px-4 py-3 border border-slate-200 rounded-xl" required></textarea>
+        </div>
+        <button type="submit" class="w-full bg-sky-600 text-white px-6 py-3 rounded-full ui-button">投稿する</button>
+        <p id="reportMessage" class="text-sm text-slate-600"></p>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById("loginForm");
+    const loginMessage = document.getElementById("loginMessage");
+    const editor = document.getElementById("editor");
+    const reportForm = document.getElementById("reportForm");
+    const reportMessage = document.getElementById("reportMessage");
+
+    loginForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      loginMessage.textContent = "";
+      const formData = new FormData(loginForm);
+      const payload = {
+        user: formData.get("user"),
+        password: formData.get("password")
+      };
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) {
+        loginMessage.textContent = "ログインに失敗しました。";
+        return;
+      }
+      editor.hidden = false;
+      loginForm.closest("section").hidden = true;
+    });
+
+    reportForm?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      reportMessage.textContent = "";
+      const formData = new FormData(reportForm);
+      const payload = Object.fromEntries(formData.entries());
+      const res = await fetch("/api/report/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        reportMessage.textContent = data.error || "投稿に失敗しました。";
+        return;
+      }
+      reportMessage.textContent = `投稿しました: ${data.url}`;
+      reportForm.reset();
+    });
+  </script>
+</BaseLayout>

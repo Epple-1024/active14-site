@@ -1,2 +1,11 @@
 .DS_Store
 node_modules
+
+# 環境変数を隠す
+.env
+.env.local
+.env.*
+
+# ビルド生成物やVercelの設定ファイル
+dist/
+.vercel/

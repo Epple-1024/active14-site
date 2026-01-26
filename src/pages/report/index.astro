@@ -1,69 +1,32 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
 
-// 修正ポイント: slugを追加し、実在する記事のみ slug を指定、まだない記事は null にする
-const reports = [
-  { 
-    id: 1, 
-    slug: "2026-01", // ここがディレクトリ名と一致します (/src/pages/report/2026-01/)
-    date: "2026.01.12", 
-    title: "1月の活動報告：寒空の下での清掃", 
-    image: "/assets/images/hero001.avif" 
-  },
-  { 
-    id: 2, 
-    slug: null, // まだファイルがないので null にしてリンクを作らない
-    date: "2025.12.14", 
-    title: "12月の活動報告：年内最後の活動", 
-    image: null 
-  },
-  { 
-    id: 3, 
-    slug: null, // まだファイルがないので null
-    date: "2025.11.10", 
-    title: "11月の活動報告：紅葉と荒浜", 
-    image: null 
-  },
-];
+const reports = await getCollection("reports");
+const sortedReports = reports.sort((a, b) => {
+  return new Date(b.data.date).getTime() - new Date(a.data.date).getTime();
+});
 ---
 
 <BaseLayout title="REPORT - ACTIVE14">
   <div class="main-container max-w-5xl mx-auto px-6 w-full">
-    
     <section class="ui-card">
       <h1 class="text-3xl font-bold text-sky-600 mb-2">活動記録</h1>
-      <p class="text-lg text-slate-600">
-        これまでの活動の様子をお届けします。
-      </p>
+      <p class="text-lg text-slate-600">これまでの活動の様子をお届けします。</p>
     </section>
 
-    {reports.map((post) => (
+    {sortedReports.map((post) => (
       <section class="ui-card flex flex-col md:flex-row gap-6 items-center md:items-start">
-        {post.image && (
-          <div class="w-full md:w-1/3 aspect-video bg-slate-200 rounded-xl overflow-hidden shrink-0">
-            <img src={post.image} alt="" class="w-full h-full object-cover" />
-          </div>
-        )}
         <div class="flex-1 w-full">
-          <p class="text-sm font-bold text-sky-500 mb-1">{post.date}</p>
-          <h2 class="text-2xl font-bold text-slate-800 mb-3">{post.title}</h2>
-          <p class="text-slate-600 mb-4 line-clamp-2">
-            この日は気温も低く、風が強い中での活動となりましたが、15名の参加者が集まりました。海岸にはプラスチックごみが多く漂着しており...
-          </p>
-          
-          {/* 修正ポイント: slugがある場合のみリンクを表示、なければ「準備中」とする */}
-          {post.slug ? (
-            <a href={`/report/${post.slug}/`} class="text-sky-600 font-bold hover:underline">
-              続きを読む →
-            </a>
-          ) : (
-            <span class="text-gray-400 font-bold text-sm cursor-not-allowed">
-              記事準備中
-            </span>
-          )}
+          <p class="text-sm font-bold text-sky-500 mb-1">{post.data.date}</p>
+          <h2 class="text-2xl font-bold text-slate-800 mb-3">{post.data.title}</h2>
+          <p class="text-slate-600 mb-2 line-clamp-2">{post.data.summary}</p>
+          <p class="text-sm text-slate-500 mb-4">参加人数: {post.data.participants} ・ 回収量: {post.data.collected}</p>
+          <a href={`/r/${post.data.id}/`} class="text-sky-600 font-bold hover:underline">
+            続きを読む →
+          </a>
         </div>
       </section>
     ))}
-
   </div>
 </BaseLayout>
