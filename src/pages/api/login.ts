@@ -1,48 +1,14 @@
 import type { APIRoute } from "astro";
-import crypto from "node:crypto";
-import { createSessionToken, getSessionCookieName } from "../../lib/auth";
+import {
+  createSessionToken,
+  getAuthUsersMap,
+  getSessionCookieName,
+  getTtlSeconds,
+  isProdEnv,
+  verifyUserPassword
+} from "../../lib/auth";
 
 export const prerender = false;
-
-function getEnv(name: string) {
-  // @ts-ignore
-  return import.meta.env[name] ?? process.env[name];
-}
-
-function parseUsers(): Map<string, string> {
-  const map = new Map<string, string>();
-
-  const raw = String(getEnv("AUTH_USERS") ?? "").trim();
-  if (raw) {
-    // format: "user1:pass1,user2:pass2"
-    for (const part of raw.split(",")) {
-      const s = part.trim();
-      if (!s) continue;
-      const idx = s.indexOf(":");
-      if (idx <= 0) continue;
-      const user = s.slice(0, idx).trim();
-      const pass = s.slice(idx + 1).trim();
-      if (user && pass) map.set(user, pass);
-    }
-  }
-
-  // backward compat (single user)
-  const singleUser = String(getEnv("AUTH_USER") ?? "").trim();
-  const singlePass = String(getEnv("AUTH_PASS") ?? "").trim();
-  if (!map.size && singleUser && singlePass) {
-    map.set(singleUser, singlePass);
-  }
-
-  return map;
-}
-
-function safeEqual(a: string, b: string) {
-  // timingSafeEqual requires same length
-  const ab = Buffer.from(a);
-  const bb = Buffer.from(b);
-  if (ab.length !== bb.length) return false;
-  return crypto.timingSafeEqual(ab, bb);
-}
 
 function isAllowedOrigin(request: Request) {
   // ブラウザの fetch は Origin が付く。bot/雑POSTは付かない事がある。
@@ -50,16 +16,27 @@ function isAllowedOrigin(request: Request) {
   const origin = request.headers.get("origin") || "";
   const referer = request.headers.get("referer") || "";
 
-  // devは緩め
-  // @ts-ignore
-  const isProd = import.meta.env.PROD;
-
-  if (!isProd) return true;
+  // dev は緩め
+  if (!isProdEnv()) return true;
 
   const allowed = ["https://www.active14.org", "https://active14.org"];
   if (origin) return allowed.includes(origin);
   if (referer) return allowed.some((a) => referer.startsWith(a));
   return true; // まずは緩め運用（必要なら false にして締める）
+}
+
+function getCookieDomain(request: Request) {
+  // www / apex 両方で使えるように（PRODのみ）
+  if (!isProdEnv()) return undefined;
+  try {
+    const host = new URL(request.url).hostname;
+    if (host === "active14.org" || host.endsWith(".active14.org")) {
+      return ".active14.org";
+    }
+  } catch {
+    // ignore
+  }
+  return undefined;
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -84,28 +61,32 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     return new Response(JSON.stringify({ error: "invalid_request" }), { status: 400 });
   }
 
-  const users = parseUsers();
-  if (!users.size) {
+  // サーバ側の認証設定が未投入なら 500
+  const users = getAuthUsersMap();
+  if (!Object.keys(users).length) {
     return new Response(JSON.stringify({ error: "server_misconfigured" }), { status: 500 });
   }
 
-  const user = String(body.user);
+  const user = String(body.user).trim();
   const pass = String(body.password);
-
-  const expectedPass = users.get(user);
-  if (!expectedPass) {
-    return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 });
+  if (!user) {
+    return new Response(JSON.stringify({ error: "invalid_request" }), { status: 400 });
   }
-  if (!safeEqual(pass, expectedPass)) {
+
+  if (!verifyUserPassword(user, pass)) {
     return new Response(JSON.stringify({ error: "unauthorized" }), { status: 401 });
   }
 
   const token = createSessionToken(user);
+
+  const domain = getCookieDomain(request);
   cookies.set(getSessionCookieName(), token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    secure: import.meta.env.PROD,
+    secure: isProdEnv(),
+    maxAge: getTtlSeconds(),
+    ...(domain ? { domain } : {})
   });
 
   return new Response(JSON.stringify({ ok: true }));
