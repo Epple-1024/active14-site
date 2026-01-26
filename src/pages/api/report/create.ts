@@ -11,9 +11,10 @@ function formatMarkdown(input: {
   summary: string;
   participants: string;
   collected: string;
+  author: string;   // 追加
   body: string;
 }) {
-  return `---\nid: "${input.id}"\ndate: "${input.date}"\ntitle: "${input.title}"\nsummary: "${input.summary}"\nparticipants: "${input.participants}"\ncollected: "${input.collected}"\n---\n\n${input.body.trim()}\n`;
+  return `---\nid: "${input.id}"\ndate: "${input.date}"\ntitle: "${input.title}"\nsummary: "${input.summary}"\nparticipants: "${input.participants}"\ncollected: "${input.collected}"\nauthor: "${input.author}"\n---\n\n${input.body.trim()}\n`;
 }
 
 export const POST: APIRoute = async ({ request, cookies }) => {
@@ -49,14 +50,15 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   const id = `${year.slice(2)}${month.padStart(2, "0")}-${sameMonth.length + 1}`;
 
   const markdown = formatMarkdown({
-    id,
-    date,
-    title,
-    summary,
-    participants,
-    collected,
-    body: contentBody
-  });
+  id,
+  date,
+  title,
+  summary,
+  participants,
+  collected,
+  author: session.user,
+  body: contentBody
+});
 
   const owner = process.env.GH_OWNER;
   const repo = process.env.GH_REPO;
